@@ -366,7 +366,7 @@ export default function CheckoutPage() {
 
       // 3. Configure Razorpay modal parameters
       const options: any = {
-        key: razorpayOrder.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SsgGRKKCykM0TR",
+        key: razorpayOrder.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_Ssh93IdTdqm55H",
         amount: Math.round(total * 100),
         currency: "INR",
         name: "LuxeGift Atelier",

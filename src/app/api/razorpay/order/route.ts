@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       amount: Math.round(parsed.data.amount * 100),
       currency: parsed.data.currency,
-      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || "rzp_test_SsgGRKKCykM0TR",
+      key_id: process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || "rzp_test_Ssh93IdTdqm55H",
       isFallback: true,
       authError: "Razorpay API keys not configured.",
     });
