@@ -78,15 +78,15 @@ export default function CustomerLoginPage() {
             <div className="inline-flex size-12 items-center justify-center rounded-xl border border-gold/40 bg-gold/12 mb-3">
               <User className="size-6 text-gold" />
             </div>
-            <p className="editorial-eyebrow mb-2">Private Client Access</p>
+            <p className="editorial-eyebrow mb-2">LuxeGift Portal</p>
             <h1
               className="text-3xl font-bold text-white tracking-tight"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              The Atelier Client Member
+              Customer Login
             </h1>
             <p className="mt-2 text-sm text-white/55">
-              Access your personalized occasion reminders, curated wishlists, and order tracking logs.
+              Sign in to your account or create a new account to manage wishlists, saved addresses, and order history.
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export default function CustomerLoginPage() {
                     className="w-full py-6 mt-4 font-bold text-sm disabled:opacity-60"
                   >
                     {isLoading ? "Signing In..." : (
-                      <>Sign In to Atelier Account <ArrowRight className="size-4 ml-1.5" /></>
+                      <>Customer Sign In <ArrowRight className="size-4 ml-1.5" /></>
                     )}
                   </Button>
 
@@ -285,7 +285,7 @@ export default function CustomerLoginPage() {
                     className="w-full py-6 mt-4 font-bold text-sm disabled:opacity-60"
                   >
                     {isLoading ? "Creating Account..." : (
-                      <>Create Atelier Account <ArrowRight className="size-4 ml-1.5" /></>
+                      <>Create Customer Account <ArrowRight className="size-4 ml-1.5" /></>
                     )}
                   </Button>
 
