@@ -17,6 +17,7 @@ import { createOrder } from "@/lib/actions";
 import { saveOrderToFirestore, getUserAddressesFromFirestore } from "@/lib/firestore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 import { products } from "@/lib/data";
 import type { CartItem } from "@/context/cart-context";
 
@@ -539,6 +540,7 @@ export default function CheckoutPage() {
   // 3. Checkout Form Page State
   return (
     <SiteShell>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Section className="py-12">
         <SectionHeading 
           title="Checkout Atelier." 
