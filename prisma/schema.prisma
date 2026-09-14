@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  DRAFT
+  PAYMENT_PENDING
+  PAID
+  FULFILLED
+  CANCELLED
+}
+
+enum NotificationType {
+  ORDER
+  REMINDER
+  PROMOTION
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String?
+  avatarUrl      String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  orders         Order[]
+  reviews        Review[]
+  wishlists      Wishlist[]
+  addresses      Address[]
+  notifications  Notification[]
+  savedOccasions SavedOccasion[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  description   String
+  price         Int
+  compareAt     Int?
+  images        String[]
+  tags          String[]
+  inventory     Int           @default(0)
+  active        Boolean       @default(true)
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  reviews       Review[]
+  wishlists     Wishlist[]
+  giftBoxItems  GiftBoxItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  email           String
+  status          OrderStatus @default(PAYMENT_PENDING)
+  subtotal        Int
+  discount        Int         @default(0)
+  total           Int
+  couponId        String?
+  coupon          Coupon?     @relation(fields: [couponId], references: [id])
+  deliveryDate    DateTime?
+  giftMessage     String?
+  paymentProvider String      @default("razorpay")
+  paymentRef      String?
+  items           OrderItem[]
+  addressId       String?
+  address         Address?    @relation(fields: [addressId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  title     String?
+  body      String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  percentOff  Int?
+  amountOff   Int?
+  active      Boolean  @default(true)
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  orders      Order[]
+}
+
+model GiftBox {
+  id            String        @id @default(cuid())
+  userId        String?
+  title         String
+  boxDesign     String
+  wrappingStyle String
+  message       String?
+  photoUrls     String[]
+  deliveryDate  DateTime?
+  total         Int
+  items         GiftBoxItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model GiftBoxItem {
+  id        String  @id @default(cuid())
+  giftBoxId String
+  giftBox   GiftBox @relation(fields: [giftBoxId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  name       String
+  phone      String
+  line1      String
+  line2      String?
+  city       String
+  region     String
+  postalCode String
+  country    String   @default("IN")
+  orders     Order[]
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+}
+
+model SavedOccasion {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String
+  relationship   String
+  occasionDate   DateTime
+  reminderLeadDays Int     @default(7)
+  lastSuggestedAt DateTime?
+  createdAt      DateTime  @default(now())
+}

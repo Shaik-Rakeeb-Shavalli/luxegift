@@ -1,0 +1,343 @@
+/* ── Google Fonts: Playfair Display (luxury serif) + Inter (clean sans) ── */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+
+
+:root {
+  --background: #0b0b0b;
+  --foreground: #ffffff;
+  --gold: #d4af37;
+  --gold-soft: #f0d978;
+  --gold-pale: #f8eebb;
+  --ink: #0b0b0b;
+  --muted: #b8b8b0;
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-strong: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.16);
+
+  /* Typography families */
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-pale: var(--gold-pale);
+  --color-muted-luxury: var(--muted);
+  --color-surface-luxury: var(--surface);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-serif: var(--font-serif);
+  --font-body: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Lenis handles smooth scroll — removed scroll-behavior: smooth to avoid conflict */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.luxury-shell {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.18), transparent 34rem),
+    linear-gradient(180deg, #0b0b0b 0%, #11100d 48%, #0b0b0b 100%);
+}
+
+.glass {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+}
+
+/* ── Serif font helper ─────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* ── Gold gradient text (animated shine sweep) ──────────── */
+.gold-gradient-text {
+  background: linear-gradient(
+    105deg,
+    #b8962e 0%,
+    #d4af37 25%,
+    #f0d978 45%,
+    #fffbe6 52%,
+    #f0d978 58%,
+    #d4af37 75%,
+    #b8962e 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-shine 4s linear infinite;
+}
+
+/* ── Gold static gradient text (no animation) ──────────── */
+.gold-gradient-text-static {
+  background: linear-gradient(135deg, #d4af37 0%, #f0d978 50%, #d4af37 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Editorial eyebrow style ────────────────────────────── */
+.editorial-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.75);
+}
+
+/* ── Cinematic display heading ──────────────────────────── */
+.cinematic-display {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/* ── Luxury body copy ────────────────────────────────────── */
+.luxury-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.gold-text {
+  color: var(--gold);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* ── Infinite marquee keyframe ─────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
+}
+
+/* ── Gold shine sweep keyframe ─────────────────────────── */
+@keyframes gold-shine {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes shine-sweep {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Horizontal scroll gallery — hide scrollbar ─────────── */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Ornament rule — thin gold line ────────────────────── */
+.gold-rule {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+}
+
+/* ── Respect reduced motion ─────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Luxury Gold Button Shimmer Sweep ─────────────────── */
+.btn-gold-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-gold-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transition: transform 0.55s ease-out;
+  z-index: 2;
+}
+.btn-gold-shimmer:hover::before {
+  transform: translateX(100%);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SONNER TOAST — Luxury Dark Gold Theme
+   Overrides the default green/blue/red richColors palette
+   to match #141210 dark background + gold accent language
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Base toast container ───────────────────────────────── */
+[data-sonner-toaster] {
+  --width: 360px;
+  --mobile-offset: 16px;
+  --offset: 16px;
+  font-family: var(--font-body, "Inter", sans-serif) !important;
+}
+
+/* ── All toasts — shared base ───────────────────────────── */
+[data-sonner-toast] {
+  background: #141210 !important;
+  border: 1px solid rgba(212, 175, 55, 0.28) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(212, 175, 55, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(20px) !important;
+  padding: 14px 16px !important;
+}
+
+/* ── Toast title ────────────────────────────────────────── */
+[data-sonner-toast] [data-title] {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.01em !important;
+  font-family: var(--font-body, "Inter", sans-serif) !important;
+}
+
+/* ── Toast description ──────────────────────────────────── */
+[data-sonner-toast] [data-description] {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  font-family: var(--font-body, "Inter", sans-serif) !important;
+  margin-top: 2px !important;
+}
+
+/* ── Close button ───────────────────────────────────────── */
+[data-sonner-toast] [data-close-button] {
+  background: rgba(212, 175, 55, 0.1) !important;
+  border: 1px solid rgba(212, 175, 55, 0.2) !important;
+  color: rgba(212, 175, 55, 0.7) !important;
+}
+[data-sonner-toast] [data-close-button]:hover {
+  background: rgba(212, 175, 55, 0.18) !important;
+  color: #d4af37 !important;
+}
+
+/* ── SUCCESS — Gold accent ──────────────────────────────── */
+[data-sonner-toast][data-type="success"] {
+  border-left: 3px solid #d4af37 !important;
+  border-color: rgba(212, 175, 55, 0.35) !important;
+  border-left-color: #d4af37 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] svg,
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #d4af37 !important;
+  fill: none !important;
+  stroke: #d4af37 !important;
+}
+
+/* ── INFO — Muted gold ──────────────────────────────────── */
+[data-sonner-toast][data-type="info"] {
+  border-left: 3px solid rgba(212, 175, 55, 0.5) !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+  border-left-color: rgba(212, 175, 55, 0.55) !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] svg,
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: rgba(212, 175, 55, 0.65) !important;
+  fill: none !important;
+  stroke: rgba(212, 175, 55, 0.65) !important;
+}
+
+/* ── ERROR — Soft crimson, stays on-brand ───────────────── */
+[data-sonner-toast][data-type="error"] {
+  border-left: 3px solid #c0514a !important;
+  border-color: rgba(192, 81, 74, 0.3) !important;
+  border-left-color: #c0514a !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] svg,
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: #e07060 !important;
+  fill: none !important;
+  stroke: #e07060 !important;
+}
+
+/* ── WARNING — Warm amber ───────────────────────────────── */
+[data-sonner-toast][data-type="warning"] {
+  border-left: 3px solid #c8922a !important;
+  border-color: rgba(200, 146, 42, 0.28) !important;
+  border-left-color: #c8922a !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] svg,
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: #d4a847 !important;
+  fill: none !important;
+  stroke: #d4a847 !important;
+}
+
+/* ── Loading spinner ────────────────────────────────────── */
+[data-sonner-toast] [data-loader] {
+  border-color: rgba(212, 175, 55, 0.25) !important;
+  border-top-color: #d4af37 !important;
+}
+
+/* ── Action & cancel buttons inside toasts ──────────────── */
+[data-sonner-toast] [data-button] {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  color: #d4af37 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+}
+[data-sonner-toast] [data-button]:hover {
+  background: rgba(212, 175, 55, 0.25) !important;
+}
+
+[data-sonner-toast] [data-cancel] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+[data-sonner-toast] [data-cancel]:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
