@@ -20,19 +20,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid order amount." }, { status: 400 });
   }
 
-  const key_id = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  const key_id = process.env.RAZORPAY_KEY_ID?.trim();
+  const key_secret = process.env.RAZORPAY_KEY_SECRET?.trim();
 
-  // If environment variables are not configured, return a fallback response
+  // If environment variables are not configured, return a fallback response without fake ID
   if (!key_id || !key_secret) {
-    console.warn("Razorpay env vars not configured — returning demo fallback order.");
+    console.warn("Razorpay env vars not configured — returning demo fallback response.");
     return NextResponse.json({
-      id: `order_rzp_demo_${Date.now()}`,
       amount: Math.round(parsed.data.amount * 100),
       currency: parsed.data.currency,
-      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || "rzp_test_SsgGRKKCykM0TR",
       isFallback: true,
-      authError: "Razorpay API keys not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env",
+      authError: "Razorpay API keys not configured.",
     });
   }
 
@@ -47,14 +46,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ...order, key_id, isFallback: false });
   } catch (err: any) {
-    console.warn("Razorpay API authentication or order creation warning:", err);
+    console.warn("Razorpay API order creation warning:", err?.message || err);
     return NextResponse.json({
-      id: `order_rzp_${Date.now()}`,
       amount: Math.round(parsed.data.amount * 100),
       currency: parsed.data.currency,
       key_id,
       isFallback: true,
-      authError: "Razorpay API key authentication failed. Check your Secret Key in .env",
+      authError: err?.message || "Razorpay API key authentication failed.",
     });
   }
 }

@@ -413,7 +413,7 @@ export default function CheckoutPage() {
         },
       };
 
-      if (razorpayOrder.id && !razorpayOrder.isFallback) {
+      if (razorpayOrder.id && !razorpayOrder.isFallback && !String(razorpayOrder.id).includes("demo")) {
         options.order_id = razorpayOrder.id;
       }
 
