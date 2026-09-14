@@ -142,20 +142,19 @@ export default function CheckoutPage() {
 
   const handleSelectSavedAddress = (addr: SavedAddress) => {
     setSelectedAddressId(addr.id);
-    setLine1(addr.address);
+    const fullAddress = addr.address || "";
+    setLine1(fullAddress);
 
     // Pre-fill contact details if present on address object
     if (addr.name) setName(addr.name);
     if (addr.phone) setPhone(addr.phone);
 
     // Parse city, region/state, postalCode from address string
-    const parts = addr.address.split(",").map((s) => s.trim()).filter(Boolean);
+    const parts = fullAddress.split(",").map((s) => s.trim()).filter(Boolean);
 
     // Find pincode part matching digits (e.g. 621112)
     const pincodePart = parts.find((p) => /^\d{4,6}$/.test(p));
-    if (pincodePart) {
-      setPostalCode(pincodePart);
-    }
+    setPostalCode(pincodePart || "000000");
 
     // Extract city and region from parts excluding country and pincode
     const nonPinParts = parts.filter((p) => !/^\d{4,6}$/.test(p) && p.toLowerCase() !== "india");
@@ -164,6 +163,10 @@ export default function CheckoutPage() {
       setRegion(nonPinParts.slice(1).join(", "));
     } else if (nonPinParts.length === 1) {
       setCity(nonPinParts[0]);
+      setRegion("Tamil Nadu");
+    } else {
+      setCity(addr.label || "City");
+      setRegion("State");
     }
   };
 
@@ -248,8 +251,9 @@ export default function CheckoutPage() {
       toast.error("Please fill in contact details (name, email, phone).");
       return;
     }
-    if (!line1 || !city || !postalCode) {
-      toast.error("Please fill in recipient's delivery address.");
+    const activeLine1 = line1 || (selectedAddressId && selectedAddressId !== "manual" ? savedAddresses.find((a) => a.id === selectedAddressId)?.address : "");
+    if (!activeLine1) {
+      toast.error("Please select or enter recipient's delivery address.");
       return;
     }
 
