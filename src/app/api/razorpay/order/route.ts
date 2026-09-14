@@ -44,10 +44,19 @@ export async function POST(request: Request) {
       receipt: `receipt_${Date.now()}`,
     });
 
-    return NextResponse.json({ ...order, key_id, isFallback: false });
+    return NextResponse.json({
+      success: true,
+      id: order.id,
+      order_id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key_id,
+      isFallback: false,
+    });
   } catch (err: any) {
     console.warn("Razorpay API order creation warning:", err?.message || err);
     return NextResponse.json({
+      success: false,
       amount: Math.round(parsed.data.amount * 100),
       currency: parsed.data.currency,
       key_id,

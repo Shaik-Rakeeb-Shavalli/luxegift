@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     const generatedSignature = crypto
-      .createHmac("sha256", secret)
+      .createHmac("sha256", secret.trim())
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
