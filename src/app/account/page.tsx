@@ -530,7 +530,7 @@ function AccountContent() {
                     Order History
                   </h3>
                   {orders.length > 0 ? (
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 max-h-[620px] overflow-y-auto pr-2 custom-scrollbar">
                       {orders.map((order) => {
                         const isExpanded = expandedOrderId === order.id;
                         return (
