@@ -37,6 +37,7 @@ type AdminTab = "analytics" | "products" | "orders" | "coupons" | "reviews";
 
 const ORDER_STATUS_OPTIONS = [
   { value: "PAYMENT_PENDING", label: "PAYMENT PENDING" },
+  { value: "PAYMENT_FAILED", label: "PAYMENT FAILED" },
   { value: "PAID", label: "PAID (RESERVED)" },
   { value: "FULFILLED", label: "FULFILLED (SHIPPED)" },
   { value: "DELIVERED", label: "DELIVERED" },

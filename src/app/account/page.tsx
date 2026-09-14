@@ -570,6 +570,7 @@ function AccountContent() {
                                     order.status === "PAID" && "bg-blue-500/10 text-blue-400 border-blue-500/20",
                                     order.status === "PAYMENT_PENDING" && "bg-amber-500/10 text-amber-400 border-amber-500/20",
                                     order.status === "CANCELLED" && "bg-red-500/10 text-red-400 border-red-500/20",
+                                    (order.status === "PAYMENT_FAILED" || order.status === "FAILED") && "bg-red-500/10 text-red-400 border-red-500/20",
                                   )}>
                                     {order.status}
                                   </span>

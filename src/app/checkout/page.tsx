@@ -258,6 +258,78 @@ export default function CheckoutPage() {
     }
 
     startTransition(async () => {
+      const recordFailedOrder = async (reason?: string, paymentId?: string) => {
+        try {
+          const result = await createOrder({
+            email,
+            subtotal,
+            discount,
+            total,
+            couponCode: couponCode || undefined,
+            giftMessage: giftMessage || undefined,
+            deliveryDate: deliveryDate || undefined,
+            items: cart.map((item) => ({
+              productId: item.isCustomBox ? "custom-box" : item.id,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+            address: {
+              name,
+              phone,
+              line1: activeLine1,
+              city,
+              region,
+              postalCode,
+            },
+          });
+
+          if (result.ok && result.order) {
+            saveOrderToFirestore({
+              orderNumber: result.order.orderNumber,
+              customerName: name,
+              customerEmail: email,
+              customerPhone: phone,
+              items: cart,
+              subtotal,
+              discount,
+              deliveryFee,
+              total,
+              paymentMethod: "razorpay",
+              paymentStatus: "FAILED",
+              status: "PAYMENT_FAILED",
+              shippingAddress: {
+                street: activeLine1,
+                city,
+                state: region,
+                zip: postalCode,
+              },
+            });
+
+            const newRecord: StoredOrderRecord = {
+              id: result.order.id,
+              orderNumber: result.order.orderNumber,
+              date: new Date().toISOString(),
+              status: "PAYMENT_FAILED",
+              total: result.order.total,
+              items: cart.map((item) => ({ name: item.name, qty: item.quantity })),
+            };
+
+            const ordersHistory = localStorage.getItem("luxegift_orders_history");
+            const parsed = ordersHistory ? (JSON.parse(ordersHistory) as StoredOrderRecord[]) : [];
+            localStorage.setItem("luxegift_orders_history", JSON.stringify([newRecord, ...parsed]));
+
+            if (user?.id) {
+              const userHistoryKey = `luxegift_orders_${user.id}`;
+              const userHistory = localStorage.getItem(userHistoryKey);
+              const parsedUserHistory = userHistory ? (JSON.parse(userHistory) as StoredOrderRecord[]) : [];
+              localStorage.setItem(userHistoryKey, JSON.stringify([newRecord, ...parsedUserHistory]));
+            }
+          }
+        } catch (err) {
+          console.error("Failed to record payment failure:", err);
+        }
+      };
+
       const finalizeOrderAndSave = async (paymentId: string) => {
         const result = await createOrder({
           email,
@@ -275,7 +347,7 @@ export default function CheckoutPage() {
           address: {
             name,
             phone,
-            line1,
+            line1: activeLine1,
             city,
             region,
             postalCode,
@@ -298,7 +370,7 @@ export default function CheckoutPage() {
             paymentStatus: "PAID",
             status: "PAID",
             shippingAddress: {
-              street: line1,
+              street: activeLine1,
               city,
               state: region,
               zip: postalCode,
@@ -396,7 +468,9 @@ export default function CheckoutPage() {
               });
               const verifyData = await verifyRes.json();
               if (!verifyData.success) {
-                toast.error(verifyData.error || "Payment signature verification failed.");
+                const failReason = verifyData.error || "Payment signature verification failed.";
+                toast.error(`${failReason} Recorded in Order History.`);
+                await recordFailedOrder(failReason, response.razorpay_payment_id);
                 return;
               }
             }
@@ -419,8 +493,10 @@ export default function CheckoutPage() {
 
       try {
         const razorpayInstance = new (window as any).Razorpay(options);
-        razorpayInstance.on("payment.failed", function (response: any) {
-          toast.error(response.error?.description || "Razorpay payment failed.");
+        razorpayInstance.on("payment.failed", async function (response: any) {
+          const failMsg = response.error?.description || "Razorpay payment failed or was declined.";
+          toast.error(`${failMsg} Recorded in Order History.`);
+          await recordFailedOrder(failMsg, response.error?.metadata?.payment_id);
         });
         razorpayInstance.open();
       } catch (err: any) {

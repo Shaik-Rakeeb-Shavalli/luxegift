@@ -63,7 +63,8 @@ export function getActiveStepIndex(status: string): number {
 
 export function OrderTimeline({ status, orderNumber, date }: OrderTimelineProps) {
   const activeStepIdx = getActiveStepIndex(status);
-  const isCancelled = (status || "").toUpperCase() === "CANCELLED";
+  const normStatus = (status || "").toUpperCase();
+  const isFailedOrCancelled = normStatus === "CANCELLED" || normStatus === "PAYMENT_FAILED" || normStatus === "FAILED";
 
   return (
     <div className="w-full bg-black/40 border border-gold/20 rounded-xl p-5 sm:p-7 shadow-2xl backdrop-blur-md transition-all duration-300">
@@ -75,7 +76,7 @@ export function OrderTimeline({ status, orderNumber, date }: OrderTimelineProps)
         <span
           className={cn(
             "rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border",
-            isCancelled && "bg-red-500/10 text-red-400 border-red-500/20",
+            isFailedOrCancelled && "bg-red-500/10 text-red-400 border-red-500/20",
             (status === "DELIVERED" || status === "FULFILLED") && "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
             status === "PAID" && "bg-amber-500/10 text-gold border-gold/30",
             status === "PAYMENT_PENDING" && "bg-amber-500/10 text-amber-400 border-amber-500/20"
@@ -85,9 +86,11 @@ export function OrderTimeline({ status, orderNumber, date }: OrderTimelineProps)
         </span>
       </div>
 
-      {isCancelled ? (
+      {isFailedOrCancelled ? (
         <div className="py-8 text-center text-red-400 text-xs">
-          This order was cancelled. Please contact concierge support if you have questions.
+          {normStatus.includes("FAILED")
+            ? "Payment for this order attempt failed or was declined by the bank. You can retry checkout with another payment method."
+            : "This order was cancelled. Please contact concierge support if you have questions."}
         </div>
       ) : (
         <div className="flex flex-col gap-6 relative px-2 sm:px-4">
