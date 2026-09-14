@@ -528,83 +528,71 @@ export default function CheckoutPage() {
     }
   };
 
-  // 1. Success Screen State
+  // 1. Success Animated Modal State
   if (orderSuccess) {
     return (
       <SiteShell>
-        <Section className="max-w-2xl py-12">
-          <Card className="border-gold/30 bg-black/40 p-8 text-center flex flex-col items-center gap-6">
-            <span className="flex size-14 items-center justify-center rounded-full bg-gold/10 text-gold border border-gold/20 shadow-md">
-              <CheckCircle2 className="size-8 stroke-[1.5]" />
-            </span>
+        <Section className="py-12 flex justify-center items-center min-h-[70vh]">
+          {/* Trending Animated Success Popup Modal */}
+          <div className="relative w-full max-w-xl bg-black/90 border border-gold/40 rounded-2xl p-6 sm:p-8 shadow-[0_0_60px_rgba(212,175,55,0.25)] text-center flex flex-col items-center gap-6 animate-in zoom-in-95 fade-in slide-in-from-bottom-8 duration-500">
+            
+            {/* Animated Gold Glowing Aura Ring */}
+            <div className="relative flex items-center justify-center">
+              <div className="absolute size-24 rounded-full bg-gold/20 animate-ping opacity-40" />
+              <div className="relative size-16 rounded-full bg-gradient-to-tr from-gold/30 via-gold/10 to-amber-500/30 text-gold border-2 border-gold/50 flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.4)]">
+                <CheckCircle2 className="size-10 stroke-[2] text-gold animate-bounce" />
+              </div>
+            </div>
+
             <div>
-              <h1 className="text-3xl font-semibold text-white tracking-tight">Your Order is Confirmed</h1>
-              <p className="mt-2 text-sm text-white/50">
-                A receipt and tracking links have been sent to <span className="text-white">{orderSuccess.email}</span>.
+              <span className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-gold/15 text-gold border border-gold/30 mb-2">
+                Order Confirmed & Reserved
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Order Placed Successfully!</h1>
+              <p className="mt-1.5 text-xs sm:text-sm text-white/60">
+                A receipt and live tracking details have been sent to <span className="text-gold font-medium">{orderSuccess.email}</span>.
               </p>
             </div>
 
-            {/* Order Meta details */}
-            <div className="w-full bg-white/[0.02] border border-white/8 rounded-md p-4 flex flex-col gap-3 text-sm">
-              <div className="flex justify-between items-center border-b border-white/6 pb-2.5">
-                <span className="text-white/40 text-xs">Order Number</span>
-                <span className="font-semibold text-white flex items-center gap-1.5">
+            {/* Order Details Breakdown */}
+            <div className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-2.5 text-xs text-left">
+              <div className="flex justify-between items-center border-b border-white/8 pb-2">
+                <span className="text-white/40 uppercase tracking-wider text-[10px]">Order Reference</span>
+                <span className="font-mono text-gold font-bold text-sm flex items-center gap-1.5">
                   {orderSuccess.orderNumber}
                   <button onClick={copyOrderNumber} className="text-white/50 hover:text-gold transition cursor-pointer" aria-label="Copy order number">
                     <Copy className="size-3.5" />
                   </button>
                 </span>
               </div>
-              <div className="flex justify-between items-center border-b border-white/6 pb-2.5">
-                <span className="text-white/40 text-xs">Payment Method</span>
-                <span className="font-medium text-white/80">Razorpay Payment Gateway</span>
+              <div className="flex justify-between items-center border-b border-white/8 pb-2">
+                <span className="text-white/40 uppercase tracking-wider text-[10px]">Payment Status</span>
+                <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  PAID via Razorpay
+                </span>
               </div>
               {orderSuccess.paymentId && (
-                <div className="flex justify-between items-center border-b border-white/6 pb-2.5">
-                  <span className="text-white/40 text-xs">Razorpay Payment ID</span>
-                  <span className="font-mono text-xs text-gold/90">{orderSuccess.paymentId}</span>
+                <div className="flex justify-between items-center border-b border-white/8 pb-2">
+                  <span className="text-white/40 uppercase tracking-wider text-[10px]">Razorpay Payment ID</span>
+                  <span className="font-mono text-white/80">{orderSuccess.paymentId}</span>
                 </div>
               )}
               <div className="flex justify-between items-center">
-                <span className="text-white/40 text-xs">Scheduled Delivery</span>
-                <span className="font-semibold text-gold">
-                  {orderSuccess.deliveryDate 
-                    ? new Date(orderSuccess.deliveryDate).toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' })
-                    : "Standard Shipping (3-5 days)"}
-                </span>
+                <span className="text-white/40 uppercase tracking-wider text-[10px]">Total Paid</span>
+                <span className="font-bold text-gold text-base">{formatPrice(orderSuccess.total)}</span>
               </div>
             </div>
 
-            {/* Order Items Table */}
-            <div className="w-full flex flex-col text-left text-xs gap-3">
-              <p className="font-semibold text-white/80 uppercase tracking-wider text-[10px]">Recipient: {orderSuccess.recipientName}</p>
-              <div className="border border-white/6 rounded-md overflow-hidden bg-black/20">
-                {orderSuccess.items.map((item, i) => (
-                  <div key={i} className="flex justify-between items-center border-b border-white/6 p-3 last:border-b-0">
-                    <div>
-                      <p className="font-semibold text-white">{item.name}</p>
-                      <p className="text-[10px] text-white/40 mt-0.5">Qty: {item.quantity}</p>
-                    </div>
-                    <span className="font-medium text-white/80">{formatPrice(item.price * item.quantity)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="w-full flex justify-between border-t border-white/8 pt-5 text-xl font-semibold text-white">
-              <span>Total Paid</span>
-              <span className="text-gold">{formatPrice(orderSuccess.total)}</span>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/shop">Continue Gifting</Link>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <Button asChild variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                <Link href="/shop">Continue Shopping</Link>
               </Button>
-              <Button asChild className="w-full">
-                <Link href="/account">Track in Account</Link>
+              <Button asChild className="w-full bg-gold text-black font-bold hover:bg-gold-light shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                <Link href="/account?tab=orders">Track in Order History</Link>
               </Button>
             </div>
-          </Card>
+          </div>
         </Section>
       </SiteShell>
     );
@@ -644,67 +632,90 @@ export default function CheckoutPage() {
           text="Complete your delivery coordinates, select wrapping cards, and submit secure orders to our white-glove courier network." 
         />
         
-        {/* Payment Failure Alert Banner directly on Checkout Page */}
+        {/* TRENDING ANIMATED FAILURE POPUP MODAL OVERLAY */}
         {orderFailure && (
-          <div className="mb-8 w-full bg-red-950/40 border border-red-500/40 rounded-xl p-5 sm:p-6 shadow-2xl backdrop-blur-md flex flex-col gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
-            <div className="flex items-start justify-between gap-4 border-b border-red-500/20 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex-shrink-0">
-                  <XCircle className="size-6 stroke-[2]" />
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
-                    Payment Could Not Be Completed
-                    <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider">
-                      DECLINED
-                    </span>
-                  </h3>
-                  <p className="text-xs text-red-300/80 mt-0.5">
-                    {orderFailure.reason}
-                  </p>
-                </div>
-              </div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-in fade-in duration-300">
+            <div className="relative w-full max-w-lg bg-black/90 border border-red-500/40 rounded-2xl p-6 sm:p-8 shadow-[0_0_60px_rgba(239,68,68,0.25)] text-center flex flex-col items-center gap-6 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
+              
+              {/* Close Button top right */}
               <button 
                 type="button" 
                 onClick={() => setOrderFailure(null)} 
-                className="text-white/40 hover:text-white text-xs p-1"
-                aria-label="Dismiss banner"
+                className="absolute top-4 right-4 text-white/40 hover:text-white text-base p-1.5 rounded-full hover:bg-white/10 transition"
+                aria-label="Close dialog"
               >
                 ✕
               </button>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-black/40 p-3.5 rounded-lg border border-red-500/20">
-              <div>
-                <span className="text-white/40 uppercase tracking-widest text-[9px] block">Order Attempt Reference</span>
-                <span className="font-mono text-gold font-bold text-sm">{orderFailure.orderNumber}</span>
+              {/* Animated Glowing Red Alert Ring */}
+              <div className="relative flex items-center justify-center">
+                <div className="absolute size-24 rounded-full bg-red-500/20 animate-ping opacity-40" />
+                <div className="relative size-16 rounded-full bg-gradient-to-tr from-red-500/30 via-red-500/10 to-amber-500/20 text-red-400 border-2 border-red-500/50 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+                  <XCircle className="size-10 stroke-[2] text-red-400" />
+                </div>
               </div>
-              <div>
-                <span className="text-white/40 uppercase tracking-widest text-[9px] block">Status Recorded</span>
-                <span className="text-red-400 font-bold uppercase tracking-wider text-[11px]">Saved in Order History</span>
-              </div>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-1">
-              <Button 
-                type="button" 
-                onClick={(e) => {
-                  setOrderFailure(null);
-                  handleCheckoutSubmit(e);
-                }}
-                className="bg-gold text-black hover:bg-gold-light font-bold flex items-center justify-center gap-2 flex-1 shadow-[0_0_20px_rgba(212,175,55,0.2)]"
-              >
-                <RefreshCw className="size-4" />
-                <span>Try Payment Again</span>
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                asChild 
-                className="border-white/20 text-white/80 hover:text-white flex-1"
-              >
-                <Link href="/account?tab=orders">View Order History</Link>
-              </Button>
+              <div>
+                <span className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-red-500/15 text-red-400 border border-red-500/30 mb-2">
+                  Payment Authorization Declined
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Order Not Placed</h2>
+                <p className="mt-2 text-xs sm:text-sm text-red-300/90 leading-relaxed bg-red-500/10 p-3 rounded-lg border border-red-500/20 max-w-md">
+                  {orderFailure.reason}
+                </p>
+              </div>
+
+              {/* Details Breakdown Card */}
+              <div className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-2.5 text-xs text-left">
+                <div className="flex justify-between items-center border-b border-white/8 pb-2">
+                  <span className="text-white/40 uppercase tracking-wider text-[10px]">Order Attempt Reference</span>
+                  <span className="font-mono text-gold font-bold text-sm">{orderFailure.orderNumber}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-white/8 pb-2">
+                  <span className="text-white/40 uppercase tracking-wider text-[10px]">Status Saved</span>
+                  <span className="text-red-400 font-bold uppercase tracking-wider text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                    PAYMENT_FAILED in Order History
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-white/40 uppercase tracking-wider text-[10px]">Basket Reserved</span>
+                  <span className="text-emerald-400 font-medium text-[11px]">Cart & Address intact for retry</span>
+                </div>
+              </div>
+
+              {/* High-conversion Action Buttons */}
+              <div className="flex flex-col gap-3 w-full">
+                <Button 
+                  type="button" 
+                  onClick={(e) => {
+                    setOrderFailure(null);
+                    handleCheckoutSubmit(e);
+                  }}
+                  className="bg-gold text-black font-bold hover:bg-gold-light h-12 text-sm flex items-center justify-center gap-2 w-full shadow-[0_0_25px_rgba(212,175,55,0.3)] transition-transform active:scale-95 cursor-pointer"
+                >
+                  <RefreshCw className="size-4" />
+                  <span>Try Payment Again Now</span>
+                </Button>
+
+                <div className="grid grid-cols-2 gap-3 w-full">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    asChild 
+                    className="border-white/20 text-white/80 hover:text-white text-xs"
+                  >
+                    <Link href="/account?tab=orders">View Order History</Link>
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={() => setOrderFailure(null)} 
+                    className="text-white/60 hover:text-white text-xs border border-white/10"
+                  >
+                    Edit Checkout Info
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         )}
