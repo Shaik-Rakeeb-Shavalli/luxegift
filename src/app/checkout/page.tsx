@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Lock, Tag, ShoppingBag, Trash2, Calendar, CheckCircle2, Copy, MapPin, ChevronRight, Plus, Compass, Loader2 } from "lucide-react";
+import { Lock, Tag, ShoppingBag, Trash2, Calendar, CheckCircle2, Copy, MapPin, ChevronRight, Plus, Compass, Loader2, XCircle, RefreshCw } from "lucide-react";
 import { SiteShell } from "@/components/layout/site-shell";
 import { Section, SectionHeading } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,13 @@ type OrderSuccess = {
   deliveryDate?: Date | string | null;
   recipientName: string;
   items: CartItem[];
+  paymentId?: string;
+};
+
+type OrderFailure = {
+  orderNumber: string;
+  reason: string;
+  total: number;
   paymentId?: string;
 };
 
@@ -70,6 +77,7 @@ export default function CheckoutPage() {
   const [couponInput, setCouponInput] = useState("");
   const [triggerCouponBurst, setTriggerCouponBurst] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<OrderSuccess | null>(null);
+  const [orderFailure, setOrderFailure] = useState<OrderFailure | null>(null);
 
   // Form states
   const [name, setName] = useState("");
@@ -284,6 +292,13 @@ export default function CheckoutPage() {
           });
 
           if (result.ok && result.order) {
+            setOrderFailure({
+              orderNumber: result.order.orderNumber,
+              reason: reason || "Your payment was declined by the bank or could not be processed.",
+              total: result.order.total,
+              paymentId,
+            });
+
             saveOrderToFirestore({
               orderNumber: result.order.orderNumber,
               customerName: name,
@@ -629,6 +644,71 @@ export default function CheckoutPage() {
           text="Complete your delivery coordinates, select wrapping cards, and submit secure orders to our white-glove courier network." 
         />
         
+        {/* Payment Failure Alert Banner directly on Checkout Page */}
+        {orderFailure && (
+          <div className="mb-8 w-full bg-red-950/40 border border-red-500/40 rounded-xl p-5 sm:p-6 shadow-2xl backdrop-blur-md flex flex-col gap-4 animate-in fade-in slide-in-from-top-3 duration-300">
+            <div className="flex items-start justify-between gap-4 border-b border-red-500/20 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-full bg-red-500/20 text-red-400 border border-red-500/30 flex-shrink-0">
+                  <XCircle className="size-6 stroke-[2]" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    Payment Could Not Be Completed
+                    <span className="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider">
+                      DECLINED
+                    </span>
+                  </h3>
+                  <p className="text-xs text-red-300/80 mt-0.5">
+                    {orderFailure.reason}
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setOrderFailure(null)} 
+                className="text-white/40 hover:text-white text-xs p-1"
+                aria-label="Dismiss banner"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-black/40 p-3.5 rounded-lg border border-red-500/20">
+              <div>
+                <span className="text-white/40 uppercase tracking-widest text-[9px] block">Order Attempt Reference</span>
+                <span className="font-mono text-gold font-bold text-sm">{orderFailure.orderNumber}</span>
+              </div>
+              <div>
+                <span className="text-white/40 uppercase tracking-widest text-[9px] block">Status Recorded</span>
+                <span className="text-red-400 font-bold uppercase tracking-wider text-[11px]">Saved in Order History</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <Button 
+                type="button" 
+                onClick={(e) => {
+                  setOrderFailure(null);
+                  handleCheckoutSubmit(e);
+                }}
+                className="bg-gold text-black hover:bg-gold-light font-bold flex items-center justify-center gap-2 flex-1 shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+              >
+                <RefreshCw className="size-4" />
+                <span>Try Payment Again</span>
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                asChild 
+                className="border-white/20 text-white/80 hover:text-white flex-1"
+              >
+                <Link href="/account?tab=orders">View Order History</Link>
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Left Column: Checkout Form */}
           <form onSubmit={handleCheckoutSubmit} className="flex flex-col gap-6">
